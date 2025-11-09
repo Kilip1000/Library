@@ -28,7 +28,7 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class BookCommands {
-    static String[] OPERATORS = new String[]{"+", "-", "*", "/", "%", "<", ">","=b","=a","&","|"};
+    static String[] OPERATORS = new String[]{"+", "-", "*", "/", "%", "<", ">","=b","=a","&","|","swap"};
     static String[] LOADSAVE = new String[]{"load","save"};
 
     static final SuggestionProvider<ServerCommandSource> OPERATOR_SUGGESTIONS = (context, builder) -> {
@@ -112,16 +112,45 @@ public class BookCommands {
                             .then(argument("operator", StringArgumentType.string()).suggests(OPERATOR_SUGGESTIONS)
                             .then(argument("player2", EntityArgumentType.player())
                             .then(argument("index2", integer())
+                            .executes(context -> {
+                                String operator = getString(context, "operator");
+
+                                if(!Objects.equals(operator, "swap")) return 0;
+
+                                ServerPlayerEntity player1 = EntityArgumentType.getPlayer(context, "player1");
+                                ServerPlayerEntity player2 = EntityArgumentType.getPlayer(context, "player2");
+
+                                int index1 = getInteger(context, "index1");
+                                int index2 = getInteger(context, "index2");
+
+                                Library.PlayerPosKey key1 = new Library.PlayerPosKey(player1.getUuid(), index1);
+                                Library.PlayerPosKey key2 = new Library.PlayerPosKey(player2.getUuid(), index2);
+
+                                BigInteger val1 = playerPositionMap.get(key1);
+                                BigInteger val2 = playerPositionMap.get(key2);
+
+                                playerPositionMap.put(key1, val2);
+                                playerPositionMap.put(key2,val1);
+
+                                return 1;
+
+                            })
                             .then(argument("player3", EntityArgumentType.player())
                             .then(argument("index3", integer())
                             .executes(context -> {
+
                                 String operator = getString(context, "operator");
-                                ServerPlayerEntity player1 = EntityArgumentType.getPlayer(context, "player1");
-                                ServerPlayerEntity player2 = EntityArgumentType.getPlayer(context, "player2");
-                                ServerPlayerEntity player3 = EntityArgumentType.getPlayer(context, "player3");
+
+                                if(Objects.equals(operator, "swap")) return 0;
+
                                 int index1 = getInteger(context, "index1");
                                 int index2 = getInteger(context, "index2");
                                 int index3 = getInteger(context, "index3");
+
+                                ServerPlayerEntity player1 = EntityArgumentType.getPlayer(context, "player1");
+                                ServerPlayerEntity player2 = EntityArgumentType.getPlayer(context, "player2");
+                                ServerPlayerEntity player3 = EntityArgumentType.getPlayer(context, "player3");
+
                                 Library.PlayerPosKey key1 = new Library.PlayerPosKey(player1.getUuid(), index1);
                                 Library.PlayerPosKey key2 = new Library.PlayerPosKey(player2.getUuid(), index2);
                                 Library.PlayerPosKey key3 = new Library.PlayerPosKey(player3.getUuid(), index3);
@@ -142,7 +171,6 @@ public class BookCommands {
         registerEditCommand();
         registerOperationCommand();
     }
-
 
     public static BigInteger parseMath(BigInteger a, BigInteger b, String operator)
     {

@@ -13,7 +13,6 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class BaseSixtyKConverterCommands {
 
-
     public static void registerDecimalToBase60k(){
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
                 dispatcher.register(

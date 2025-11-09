@@ -30,7 +30,6 @@ public class Unifont {
 
             //for all in between
             for (int cp = start; cp <= end; cp++) {
-                //if allowed, add to alphabet
                 if (isAllowed(cp)) ALPHABET.add(cp);
             }
 
@@ -38,7 +37,6 @@ public class Unifont {
 
         // load all singles
         for (int cp : u.special) {
-            //if allowed, add to alphabet
             if (isAllowed(cp)) ALPHABET.add(cp);
         }
 
@@ -65,8 +63,7 @@ public class Unifont {
         if (type == Character.FORMAT || type == Character.SPACE_SEPARATOR) return false;
 
         // skip invisible marks and bidi controls (At least i think these are invisible and bidi)
-        if (cp == 0x200B || cp == 0x200C || cp == 0x200D || cp == 0xFEFF) return false;
-        return true;
+        return cp != 0x200B && cp != 0x200C && cp != 0x200D && cp != 0xFEFF;
     }
 
     public static String encode(BigInteger number) {
@@ -86,7 +83,7 @@ public class Unifont {
         return s.reverse().toString();
     }
 
-    public static BigInteger decode(String str) {
+    public static BigInteger decode(String str) throws IllegalArgumentException {
 
         BigInteger value = BigInteger.ZERO;
         for (int cp : str.codePoints().toArray()) {

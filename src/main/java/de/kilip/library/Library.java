@@ -13,8 +13,6 @@ public class Library implements ModInitializer {
     public record PlayerPosKey(UUID playerId, int mapPosition) {}
     public static Map<PlayerPosKey, BigInteger> playerPositionMap = new HashMap<>();
 
-
-
     @Override
 	public void onInitialize() {
         BaseSixtyKConverterCommands.registerCommands();
